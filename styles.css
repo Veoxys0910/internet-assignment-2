@@ -1,1 +1,82 @@
-/* Just in case we need this */
+/* For the instructions layout */
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+}
+
+header {
+    background-color: #5cbae5;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+header img {
+    width: 100%;
+    height: auto;
+}
+
+
+/* Title Styles */
+h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Instructions Section */
+.booking-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+/* Step Instructions */
+.steps {
+    margin: 15px 0;
+    background-color: #e0f7fa;
+    padding: 15px;
+    border-left: 5px solid #00796b;
+    font-weight: bold;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+button {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+button {
+    background-color: #5cbae5;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0097a7;
+}
+
+/* Map Container */
+.map-container {
+    border: 1px solid #0097a7;
+    height: 300px;
+    text-align: center;
+    line-height: 300px; /* Centering text vertically */
+    color: #0097a7;
+    font-weight: bold;
+    margin-top: 20px;
+}
