@@ -7,123 +7,122 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
-<body>
+    <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-            <a class="navbar-brand" href="#">Parakai Springs</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Interactive Map</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Video Game</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Wireframes and Storyboards
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#">Part 1</a></li>
-                    <li><a class="dropdown-item" href="#">Part 2</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Videogame Storyboard</a></li>
+                <a class="navbar-brand" href="#">Parakai Springs</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Interactive Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Video Game</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Wireframes and Storyboards
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Part 1</a></li>
+                                <li><a class="dropdown-item" href="#">Part 2</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Videogame Storyboard</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                </li>
-                </ul>
-            </div>
+                </div>
             </div>
         </nav>
 
-        <main>
-            <section class="mt-5 text-center container bg-white">
-                <div style="height: 200px;">
-                    <img src="/assets/MainPageBanner.png" alt="Banner" class="img-fluid" />
-                </div>
-            </section>
+        <main class="container">
+            <div class="row">
+                <section class="mt-5 text-center container bg-light p-0">
+                    <img src="./assets/MainPageBanner.png" alt="Banner" class="img-fluid"/>
+                </section>
+            </div>
 
-            <div class="album bg-body-tertiary">
-                <div class="container">
-                <div class="instructions">
-                    <h1>Reserved Area Booking</h1>
-                    <div class ="row">
-                        <!--Instructions Part--> 
-                        <div class = "col-md-6">
-                            <h2>Book a Reserved Area</h2>
-                            <ol>
-                                <li class="instruction-item">Set Check In & Check Out dates</li>
-                                <li class="instruction-item">Enter capacity required</li>
-                                <li class="instruction-item">Click Search to see available areas</li>
-                                <li class="instruction-item">Hover over areas to see details</li>
-                                <li class="instruction-item">Select an available area</li>
-                                <li class="instruction-item">Submit booking</li>
-                            </ol>
-                            <form>
-                                <div class="form-group">
-                                    <label for="checkIn">Check-In: </label>
-                                    <input type="date" class="form-control" id="checkIn" placeholder="DD/MM/YYYY">
-                                </div><br>
-                                <div class="form-group">
-                                    <label for="checkOut">Check-Out: </label>
-                                    <input type="date" class="form-control" id="checkOut" placeholder="DD/MM/YYYY">
-                                </div><br>
-                                <div class="form-group">
-                                    <label for="capacity">Capacity: </label>
-                                    <input type="number" class="form-control" id="capacity" min="1" value="1">
-                                </div><br>
-                                <button type="button" class="btn btn-primary">Search</button>
-                            </form>
-                        </div>                    
+            <div class="instructions">
+                <h1>Reserved Area Booking</h1>
+                <div class ="row">
+                    <!--Instructions Part--> 
+                    <div class = "col-sm-12 col-md-6 me-3">
+                        <h2>Book a Reserved Area</h2>
+                        <ol>
+                            <li class="instruction-item">Set Check In & Check Out dates</li>
+                            <li class="instruction-item">Enter capacity required</li>
+                            <li class="instruction-item">Click Search to see available areas</li>
+                            <li class="instruction-item">Hover over areas to see details</li>
+                            <li class="instruction-item">Select an available area</li>
+                            <li class="instruction-item">Submit booking</li>
+                        </ol>
+                        <form>
+                            <div class="form-group">
+                                <label for="checkIn">Check-In: </label>
+                                <input type="date" class="form-control" id="checkIn" placeholder="DD/MM/YYYY">
+                            </div><br>
+                            <div class="form-group">
+                                <label for="checkOut">Check-Out: </label>
+                                <input type="date" class="form-control" id="checkOut" placeholder="DD/MM/YYYY">
+                            </div><br>
+                            <div class="form-group">
+                                <label for="capacity">Capacity: </label>
+                                <input type="number" class="form-control" id="capacity" min="1" value="1">
+                            </div><br>
+                            <button type="button" class="btn btn-primary">Search</button>
+                        </form>
+                    </div>                    
 
-                        <!--Interactive Map!--> 
-                        <div class="col-md-5">
-                            <div class="map-border d-flex align-items-center justify-content-center">
-                                <span>Interactive Map In Progress...</span>
-                            </div>
+                    <!--Interactive Map!--> 
+                    <div class="map-border d-flex align-items-center justify-content-center mt-3">
+                    <span>Interactive Map In Progress...</span>
                     </div>
                 </div>
             </div>
-
-            <!--Included the styles here to avoid additional HTTPS reqs (feel free to change this)-->
-            <style>
-            .map-border {
-                border: 2px solid lightblue; 
-                height: 500px;
-                width: 600px;
-                position: relative; /* Ensures proper stacking with other elements */
-            }
-            .instructions {
-                color: black; 
-                padding: 20px; 
-                font-size: 16px; 
-                margin: 10px; 
-            }
-            .instruction-item {
-                border: 2px solid rgba(173, 216, 230, 0.2);
-                background-color: rgba(173, 216, 230, 0.2); /* Light blue with 50% opacity */
-                padding: 5px;
-                margin: 10px 0; 
-                border-radius: 2px; 
-            }
-            ol {
-                list-style-type: none; 
-                counter-reset: list; 
-            }
-            ol li {
-                counter-increment: list; 
-                margin-bottom: 10px; 
-            }
-            ol li::before {
-                content: counter(list) ". "; 
-                font-family: "Papyrus", sans-serif;
-                font-weight: bold; 
-                color: black; 
-            }
-        </style>
-
         </main>
-</body>
+    </body>
+
+    <!--Included the styles here to avoid additional HTTPS reqs (feel free to change this)-->
+    <style>
+        .map-border {
+            border: 2px solid lightblue; 
+            max-height: 500px;
+            max-width: 600px;
+
+            min-width: 300px;
+            min-height: 400px;
+
+            position: relative; /* Ensures proper stacking with other elements */
+        }
+        .instructions {
+            color: black; 
+            padding: 20px; 
+            font-size: 16px; 
+            margin: 10px; 
+        }
+        .instruction-item {
+            border: 2px solid rgba(173, 216, 230, 0.2);
+            background-color: rgba(173, 216, 230, 0.2); /* Light blue with 50% opacity */
+            padding: 5px;
+            margin: 10px 0; 
+            border-radius: 2px; 
+        }
+        ol {
+            list-style-type: none; 
+            counter-reset: list; 
+        }
+        ol li {
+            counter-increment: list; 
+            margin-bottom: 10px; 
+        }
+        ol li::before {
+            content: counter(list) ". "; 
+            font-family: "Papyrus", sans-serif;
+            font-weight: bold; 
+            color: black; 
+        }
+    </style>
 </html>
