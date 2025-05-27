@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swimming Pool Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #aae2db;
+        }
+        .game-container {
+            border: 5px solid rgb(25, 21, 80);
+            background-color: rgb(164, 224, 215);
+            padding: 20px;
+            margin: auto;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>Swim & Catch</h1>
+    <p>Use W, A, S, D to swim. Press Spacebar to catch!</p>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const SPRITE_WIDTH = 48;
+    const SPRITE_HEIGHT = 48;
+    const SCALE = 2;
+    const DRAW_WIDTH = SPRITE_WIDTH * SCALE;
+    const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
+
+    const sheet = new Image();
+    sheet.src = "./assets/spritesheet_zoro.png"; // update path as needed
+
+    let frame = 0;
+    let frameCount = 6;
+    let row = 4;
+    let lastFrameTime = 0;
+    const frameDelay = 130;
+
+    const player = {
+        x: 300,
+        y: 300,
+        speed: 1.5,
+        dx: 0,
+        dy: 0,
+        catching: false,
+        facingLeft: false
+    };
+
+    const keys = {};
+
+    document.addEventListener("keydown", e => {
+        keys[e.key.toLowerCase()] = true;
+        if (e.key === " ") player.catching = true;
+    });
+
+    document.addEventListener("keyup", e => {
+        keys[e.key.toLowerCase()] = false;
+        if (e.key === " ") player.catching = false;
+    });
+
+    function updateDirection() {
+        let dx = 0, dy = 0;
+        if (keys["w"]) dy = -1;
+        if (keys["s"]) dy = 1;
+        if (keys["a"]) dx = -1;
+        if (keys["d"]) dx = 1;
+
+        player.dx = dx;
+        player.dy = dy;
+
+        if (dx < 0) player.facingLeft = true;
+        else if (dx > 0) player.facingLeft = false;
+
+        player.x += dx * player.speed;
+        player.y += dy * player.speed;
+
+        if (player.catching) {
+            if (dx === 0 && dy === 0) row = 2;
+            else if (dx !== 0 && dy !== 0) row = 1;
+            else row = 0;
+        } else {
+            if (dx === 0 && dy === 0) row = 4;
+            else if (dx !== 0 && dy !== 0) row = 6;
+            else row = 5;
+        }
+    }
+
+    function drawFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const sx = frame * SPRITE_WIDTH;
+        const sy = row * SPRITE_HEIGHT;
+        const dx = player.x;
+        const dy = player.y;
+
+        ctx.save();
+        if (player.facingLeft) {
+            ctx.translate(dx + DRAW_WIDTH, dy);
+            ctx.scale(-1, 1);
+        } else {
+            ctx.translate(dx, dy);
+        }
+
+        ctx.drawImage(sheet, sx, sy, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, DRAW_WIDTH, DRAW_HEIGHT);
+        ctx.restore();
+    }
+
+    function gameLoop(timestamp) {
+        updateDirection();
+
+        if (timestamp - lastFrameTime > frameDelay) {
+            frame = (frame + 1) % frameCount;
+            lastFrameTime = timestamp;
+        }
+
+        drawFrame();
+        requestAnimationFrame(gameLoop);
+    }
+
+    sheet.onload = () => {
+        requestAnimationFrame(gameLoop);
+    };
+    </script>
+</body>
+</html>
