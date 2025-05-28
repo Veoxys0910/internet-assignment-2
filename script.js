@@ -6,38 +6,43 @@ function init() {
 
 function loadMapPoints() {
     let map = document.getElementById("map-container");
-    let position = [[90, 330]];
+    let position = [
+        [90, 330], [20, 250], [100, 200], [80, 100], 
+        [220, 60], [400, 120], [485, 60], [470, 230],
+        [250, 210], [290, 330]];
+
+    let pointWrapper;
+    let pointIMG;
+    let pointLabel;
 
     for (let i = 0; i < position.length; i++) {
-        // Create wrapper div
-        let pointWrapper = document.createElement('div');
+        
+        pointWrapper = document.createElement('div');
         pointWrapper.style.position = 'absolute';
         pointWrapper.style.left = position[i][0] + 'px';
         pointWrapper.style.top = position[i][1] + 'px';
         pointWrapper.style.width = '70px';
         pointWrapper.style.height = '70px';
         pointWrapper.style.textAlign = 'center';
-        pointWrapper.style.color = 'white'; // Change based on your design
+        pointWrapper.style.color = 'white';
 
-        // Add the point image
-        let pointImg = document.createElement('img');
-        pointImg.src = './assets/Point.png';
-        pointImg.style.width = '100%';
-        pointImg.style.height = '100%';
+        pointIMG = document.createElement('img');
+        pointIMG.src = './assets/Point.png';
+        pointIMG.style.width = '100%';
+        pointIMG.style.height = '100%';
 
-        // Add the text
-        let label = document.createElement('div');
-        label.innerText = i + 1;  // Change to whatever label you want
-        label.style.position = 'absolute';
-        label.style.left = '50%';
-        label.style.top = '40%';
-        label.style.transform = 'translate(-50%, -50%)';
-        label.style.fontWeight = 'bold';
-        label.style.pointerEvents = 'none'; // So text doesn't block clicks
+        pointLabel = document.createElement('div');
+        pointLabel.innerText = i + 1;
+        pointLabel.style.position = 'absolute';
+        pointLabel.style.left = '50%';
+        pointLabel.style.top = '40%';
+        pointLabel.style.transform = 'translate(-50%, -50%)';
+        pointLabel.style.fontWeight = 'bold';
+        pointLabel.style.pointerEvents = 'none';
+        pointLabel.style.color = "lightgreen";
 
-        // Combine them
-        pointWrapper.appendChild(pointImg);
-        pointWrapper.appendChild(label);
+        pointWrapper.appendChild(pointIMG);
+        pointWrapper.appendChild(pointLabel);
         map.appendChild(pointWrapper);
     }
 }
