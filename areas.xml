@@ -1,0 +1,7 @@
+<areas>
+  <area id="a1" capacity="5" cost="50" booked="false" image="./assets/area1.png" x="50" y="60" />
+  <area id="a2" capacity="10" cost="80" booked="true" image="./assets/area2.png" x="150" y="60" />
+  <area id="a3" capacity="20" cost="120" booked="false" image="./assets/area3.png" x="250" y="120" />
+  <area id="a4" capacity="5" cost="45" booked="true" image="./assets/area4.png" x="100" y="200" />
+  <area id="a5" capacity="50" cost="300" booked="false" image="./assets/area5.png" x="200" y="300" />
+</areas>
