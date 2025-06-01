@@ -58,9 +58,12 @@ function loadXMLAreas() {
         .then(data => {
             const areas = data.getElementsByTagName('area');
             const container = document.getElementById('interactive-areas');
+            const hoverPreview = document.getElementById('hover-preview');
+            const hoverImg = document.getElementById('hover-img');
+            const hoverInfo = document.getElementById('hover-info');
 
-            if (!container) {
-                console.error("Missing <div id='interactive-areas'> in HTML.");
+            if (!container || !hoverPreview || !hoverImg || !hoverInfo) {
+                console.error("Missing required HTML elements.");
                 return;
             }
 
@@ -69,50 +72,42 @@ function loadXMLAreas() {
                 let x = parseInt(area.getAttribute('x'));
                 let y = parseInt(area.getAttribute('y'));
                 let booked = area.getAttribute('booked') === 'true';
-                let capacity = parseInt(area.getAttribute('capacity'));
-                let cost = parseFloat(area.getAttribute('cost'));
+                let image = area.getAttribute('image');
+                let capacity = area.getAttribute('capacity');
+                let cost = area.getAttribute('cost');
 
-                let btn = document.createElement('div');
-                btn.className = 'map-area' + (booked ? ' booked' : '');
-                btn.style.position = 'absolute';
-                btn.style.left = `${x}px`;
-                btn.style.top = `${y}px`;
-                btn.style.width = '40px';
-                btn.style.height = '40px';
-                btn.style.backgroundColor = booked ? 'red' : 'green';
-                btn.style.borderRadius = '50%';
-                btn.style.cursor = 'pointer';
-                btn.title = `ID: ${id}\nCapacity: ${capacity}\nCost: $${cost}\nBooked: ${booked ? 'Yes' : 'No'}`;
+                let areaDiv = document.createElement('div');
+                areaDiv.classList.add('map-area');
+                areaDiv.style.position = 'absolute';
+                areaDiv.style.left = `${x}px`;
+                areaDiv.style.top = `${y}px`;
+                areaDiv.style.width = '50px';
+                areaDiv.style.height = '50px';
 
-                btn.onclick = () => {
-                    if (booked) {
-                        alert("This area is already booked.");
-                    } else {
-                        let people = parseInt(document.getElementById("capacity").value);
-                        let checkIn = new Date(document.getElementById("checkIn").value);
-                        let checkOut = new Date(document.getElementById("checkOut").value);
-                        let days = (checkOut - checkIn) / (1000 * 3600 * 24);
+                if (booked) areaDiv.classList.add('booked');
 
-                        if (isNaN(people) || isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
-                            alert("Please fill in all fields.");
-                            return;
-                        }
+                // Hover event
+                areaDiv.addEventListener('mouseover', (e) => {
+                    hoverImg.src = image;
+                    hoverInfo.innerHTML = `
+                        <strong>ID:</strong> ${id}<br/>
+                        <strong>Capacity:</strong> ${capacity}<br/>
+                        <strong>Cost:</strong> $${cost}<br/>
+                        <strong>Status:</strong> ${booked ? "Booked" : "Available"}
+                    `;
+                    hoverPreview.style.display = 'block';
+                    hoverPreview.style.left = `${x + 35}px`;
+                    hoverPreview.style.top = `${y - 75}px`;
+                });
 
-                        if (people > capacity) {
-                            alert("Too many people for this area!");
-                        } else if (days <= 0) {
-                            alert("Check-out must be after check-in.");
-                        } else {
-                            let total = cost * days;
-                            alert(`Booked Area ${id} for ${days} days. Total: $${total}`);
-                        }
-                    }
-                };
+                areaDiv.addEventListener('mouseout', () => {
+                    hoverPreview.style.display = 'none';
+                });
 
-                container.appendChild(btn);
+                container.appendChild(areaDiv);
             }
         })
-        .catch(err => {
-            console.error("Error loading XML areas:", err);
-        });
+        .catch(err => console.error("Error loading XML areas:", err));
 }
+
+

@@ -26,6 +26,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+.booked {
+    border: 2px solid red;
+    opacity: 0.6;
+}
+
+
 /* Instructions Section */
 .booking-container {
     background-color: white;
@@ -35,6 +41,7 @@ h1 {
     margin: 20px auto;
     max-width: 600px;
 }
+
 
 /* Step Instructions */
 .steps {
