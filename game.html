@@ -13,44 +13,69 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      flex-direction: column;
     }
 
     .main-wrapper {
       display: flex;
       align-items: center;
       gap: 40px;
+      display: none;
     }
 
     .game-container {
       border: 5px solid rgb(25, 21, 80);
-      background-color: rgb(164, 224, 215);
       padding: 10px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      background-image: url('./assets/pool_background.png');
+      background-size: cover;
+      background-position: center;
     }
 
     .cannon-container {
       width: 300px;
-      height: 300px;
-      border: 3px dashed rgb(80, 60, 60);
+      height: 600px;
       background-color: #d1f0ee;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: 8px;
+      position: relative;
     }
 
-    h1 {
-      position: absolute;
-      top: 20px;
+    #cannonImage {
+      width: 144px;
+      height: 144px;
+    }
+
+    .start-screen {
       text-align: center;
-      width: 100%;
-      color: #00796b;
+    }
+
+    .instructions {
+      margin-bottom: 20px;
+    }
+
+    #startBtn {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Swim & Catch</h1>
+  <div class="start-screen">
+    <img src="./assets/instructions.png" alt="Game Instructions" class="instructions" />
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <h1 style="display:none;">Swim & Catch</h1>
 
   <div class="main-wrapper">
     <div class="game-container">
@@ -58,7 +83,7 @@
     </div>
 
     <div class="cannon-container">
-      <!--<img id="cannonImg" src="./assets/cannon_spritesheet.png" alt="Cannon" style="width: 48px; height: 48px;">-->
+      <img id="cannonImage" src="./assets/cannon_spritesheet.png" alt="Cannon" />
     </div>
   </div>
 
@@ -66,17 +91,8 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    const SPRITE_WIDTH = 48;
-    const SPRITE_HEIGHT = 48;
-    const SCALE = 2;
-    const DRAW_WIDTH = SPRITE_WIDTH * SCALE;
-    const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
-
     const sheet = new Image();
     sheet.src = "./assets/spritesheet_zoro.png";
-
-    const cannonSheet = new Image();
-    cannonSheet.src = "./assets/cannon_spritesheet.png";
 
     let frame = 0;
     const frameCount = 6;
@@ -87,7 +103,7 @@
     const player = {
       x: 300,
       y: 300,
-      speed: 1.5,
+      speed: 2,
       dx: 0,
       dy: 0,
       catching: false,
@@ -95,47 +111,23 @@
     };
 
     const keys = {};
-
-    // Cannon animation vars and scaling
-    let cannonFrame = 0;
-    const cannonFrameCount = 6;
-    const cannonFrameDelay = 100;
-    let lastCannonFrameTime = 0;
-    let cannonAnimating = false;
-    let isCannonFiring = false;
-
-    // Cannon drawing constants for bigger size
-    const CANNON_WIDTH = 48;
-    const CANNON_HEIGHT = 48;
-    const CANNON_SCALE = 3; // Bigger scale!
-    const CANNON_DRAW_WIDTH = CANNON_WIDTH * CANNON_SCALE;
-    const CANNON_DRAW_HEIGHT = CANNON_HEIGHT * CANNON_SCALE;
-    const CANNON_X = canvas.width - CANNON_DRAW_WIDTH - 10; // 10 px padding from right
-    const CANNON_Y = canvas.height / 2 - CANNON_DRAW_HEIGHT / 2;
-
-    let ballX = null;
-    let ballY = null;
-    let ballRadius = 15;
-
     document.addEventListener("keydown", (e) => {
       keys[e.key.toLowerCase()] = true;
       if (e.key === " ") player.catching = true;
-
-      if (e.key === "Enter" && !cannonAnimating) {
-        cannonAnimating = true;
-        cannonFrame = 0;
-        lastCannonFrameTime = 0;
-      }
     });
-
     document.addEventListener("keyup", (e) => {
       keys[e.key.toLowerCase()] = false;
       if (e.key === " ") player.catching = false;
     });
 
+    const SPRITE_WIDTH = 48;
+    const SPRITE_HEIGHT = 48;
+    const SCALE = 2;
+    const DRAW_WIDTH = SPRITE_WIDTH * SCALE;
+    const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
+
     function updateDirection() {
-      let dx = 0,
-        dy = 0;
+      let dx = 0, dy = 0;
       if (keys["w"]) dy = -1;
       if (keys["s"]) dy = 1;
       if (keys["a"]) dx = -1;
@@ -154,52 +146,27 @@
       player.y = Math.max(0, Math.min(canvas.height - DRAW_HEIGHT, player.y));
 
       if (player.catching) {
-        if (dx === 0 && dy === 0) row = 2;
-        else if (dx !== 0 && dy !== 0) row = 1;
-        else row = 0;
+        row = dx || dy ? 0 : 2;
       } else {
-        if (dx === 0 && dy === 0) row = 4;
-        else if (dx !== 0 && dy !== 0) row = 6;
-        else row = 5;
+        row = dx || dy ? 5 : 4;
       }
     }
 
     function drawFrame() {
       ctx.save();
-      if (player.facingLeft) {
-        ctx.translate(player.x + DRAW_WIDTH, player.y);
-        ctx.scale(-1, 1);
-        ctx.drawImage(
-          sheet,
-          frame * SPRITE_WIDTH,
-          row * SPRITE_HEIGHT,
-          SPRITE_WIDTH,
-          SPRITE_HEIGHT,
-          0,
-          0,
-          DRAW_WIDTH,
-          DRAW_HEIGHT
-        );
-      } else {
-        ctx.translate(player.x, player.y);
-        ctx.drawImage(
-          sheet,
-          frame * SPRITE_WIDTH,
-          row * SPRITE_HEIGHT,
-          SPRITE_WIDTH,
-          SPRITE_HEIGHT,
-          0,
-          0,
-          DRAW_WIDTH,
-          DRAW_HEIGHT
-        );
-      }
+      ctx.translate(player.x + (player.facingLeft ? DRAW_WIDTH : 0), player.y);
+      if (player.facingLeft) ctx.scale(-1, 1);
+      ctx.drawImage(sheet, frame * SPRITE_WIDTH, row * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, DRAW_WIDTH, DRAW_HEIGHT);
       ctx.restore();
     }
 
+    let ballX = null, ballY = null, ballRadius = 15;
+    let colorIndex = 0;
+    const rainbowColors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+
     function drawBall() {
       if (ballX !== null && ballY !== null) {
-        ctx.fillStyle = "red";
+        ctx.fillStyle = rainbowColors[colorIndex];
         ctx.beginPath();
         ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
         ctx.fill();
@@ -207,10 +174,9 @@
     }
 
     function updateBall() {
-      if (isCannonFiring && ballX !== null) {
-        ballX -= 4;
+      if (ballX !== null) {
+        ballX -= 3;
         if (ballX < -ballRadius) {
-          isCannonFiring = false;
           ballX = null;
           ballY = null;
         }
@@ -219,71 +185,25 @@
 
     function checkCollision() {
       if (!player.catching || ballX === null) return;
-
       const px = player.x + DRAW_WIDTH / 2;
       const py = player.y + DRAW_HEIGHT / 2;
-
-      const distX = Math.abs(ballX - px);
-      const distY = Math.abs(ballY - py);
-
-      if (distX < DRAW_WIDTH / 2 && distY < DRAW_HEIGHT / 2) {
+      if (Math.abs(ballX - px) < DRAW_WIDTH / 2 && Math.abs(ballY - py) < DRAW_HEIGHT / 2) {
         ballX = null;
         ballY = null;
-        isCannonFiring = false;
         console.log("Caught!");
       }
     }
 
-    function updateCannon(timestamp) {
-      if (!cannonAnimating) return;
-
-      if (timestamp - lastCannonFrameTime > cannonFrameDelay) {
-        lastCannonFrameTime = timestamp;
-
-        cannonFrame++;
-
-        if (cannonFrame >= cannonFrameCount) {
-          cannonAnimating = false;
-          cannonFrame = 0;
-        }
-
-        if (cannonFrame === 1) {
-          // Fire ball at start of cannon animation
-          ballX = CANNON_X;
-          ballY = CANNON_Y + CANNON_DRAW_HEIGHT / 2;
-          isCannonFiring = true;
-        }
+    function spawnBall() {
+      if (ballX === null) {
+        ballX = canvas.width - 50;
+        ballY = Math.random() * (canvas.height - 30) + 15;
+        colorIndex = (colorIndex + 1) % rainbowColors.length;
       }
     }
 
-    function drawCannon() {
-      if (!cannonAnimating) {
-        // Draw idle cannon (frame 0)
-        ctx.drawImage(
-          cannonSheet,
-          0,
-          0,
-          CANNON_WIDTH,
-          CANNON_HEIGHT,
-          CANNON_X,
-          CANNON_Y,
-          CANNON_DRAW_WIDTH,
-          CANNON_DRAW_HEIGHT
-        );
-      } else {
-        // Draw animated cannon frame
-        ctx.drawImage(
-          cannonSheet,
-          cannonFrame * CANNON_WIDTH,
-          0,
-          CANNON_WIDTH,
-          CANNON_HEIGHT,
-          CANNON_X,
-          CANNON_Y,
-          CANNON_DRAW_WIDTH,
-          CANNON_DRAW_HEIGHT
-        );
-      }
+    function startAutoFiring() {
+      setInterval(spawnBall, 2000);
     }
 
     function gameLoop(timestamp) {
@@ -296,20 +216,19 @@
         lastFrameTime = timestamp;
       }
 
-      updateCannon(timestamp);
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drawFrame();
-      drawCannon();
       drawBall();
-
+      drawFrame();
       requestAnimationFrame(gameLoop);
     }
 
-    sheet.onload = () => {
+    document.getElementById("startBtn").addEventListener("click", () => {
+      document.querySelector(".start-screen").style.display = "none";
+      document.querySelector("h1").style.display = "block";
+      document.querySelector(".main-wrapper").style.display = "flex";
+      startAutoFiring();
       requestAnimationFrame(gameLoop);
-    };
+    });
   </script>
 </body>
 </html>
