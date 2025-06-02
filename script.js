@@ -96,8 +96,18 @@ function loadXMLAreas() {
                         <strong>Status:</strong> ${booked ? "Booked" : "Available"}
                     `;
                     hoverPreview.style.display = 'block';
-                    hoverPreview.style.left = `${x + 35}px`;
-                    hoverPreview.style.top = `${y - 75}px`;
+                    hoverPreview.style.left = `${x + 30}px`;
+                    hoverPreview.style.top = `${y - 100}px`;
+
+                    if (areaDiv.classList.contains('booked')) {
+                        hoverPreview.style.backgroundColor = "rgba(220, 53, 69, 0.6)";
+                    } else {
+                        hoverPreview.style.backgroundColor = "rgb(98, 252, 175, 0.6)";
+                    }
+
+                    if (x >= 400) {
+                        hoverPreview.style.left = `${x - 520}px`;
+                    }
                 });
 
                 areaDiv.addEventListener('mouseout', () => {
