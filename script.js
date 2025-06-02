@@ -1,7 +1,7 @@
 window.addEventListener("load", init);
 
 function init() {
-    loadMapPoints();     // Loads default map points
+    //loadMapPoints();     // Loads default map points
     loadXMLAreas();      // Loads interactive area data from XML
 }
 
@@ -81,8 +81,8 @@ function loadXMLAreas() {
                 areaDiv.style.position = 'absolute';
                 areaDiv.style.left = `${x}px`;
                 areaDiv.style.top = `${y}px`;
-                areaDiv.style.width = '50px';
-                areaDiv.style.height = '50px';
+                areaDiv.style.width = '20px';
+                areaDiv.style.height = '20px';
 
                 if (booked) areaDiv.classList.add('booked');
 
