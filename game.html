@@ -83,7 +83,7 @@
     </div>
 
     <div class="cannon-container">
-      <img id="cannonImage" src="./assets/cannon_spritesheet.png" alt="Cannon" />
+      <canvas id="cannonCanvas" width="144" height="144"></canvas>
     </div>
   </div>
 
@@ -136,20 +136,70 @@
       player.dx = dx;
       player.dy = dy;
 
-      if (dx < 0) player.facingLeft = true;
-      else if (dx > 0) player.facingLeft = false;
+      // Movement rows logic per character sheet:
+      // row 0 - swimming and catching (row 1)
+      // row 1 - swimming diagonally catching (row 2)
+      // row 2 - idle swim catching (row 3)
+      // row 3 - game over (row 4) - not used here
+      // row 4 - idle swim (row 5)
+      // row 5 - swimming (right) (row 6)
+      // row 6 - swimming diagonally (north-east) (row 7)
+      // row 7 - swimming diagonally down catching (south-east) (row 8)
+      // row 8 - swimming diagonally down (south-east) (row 9)
+
+      if (dx === 0 && dy === 0) {
+        // No movement
+        if (player.catching) {
+          row = 2; // idle swim catching
+        } else {
+          row = 4; // idle swim
+        }
+      } else {
+        // Moving
+        if (player.catching) {
+          // Catching + movement
+          if (dx > 0 && dy === 0) {
+            row = 0; // swimming and catching
+          } else if (dx > 0 && dy < 0) {
+            row = 1; // swimming diagonally catching (north-east)
+          } else if (dx > 0 && dy > 0) {
+            row = 7; // swimming diagonally down catching (south-east)
+          } else if (dx < 0 && dy === 0) {
+            row = 0; // swimming and catching (flip for left)
+          } else if (dx < 0 && dy < 0) {
+            row = 1; // swimming diagonally catching (north-east) flip horizontal for north-west
+          } else if (dx < 0 && dy > 0) {
+            row = 7; // swimming diagonally down catching (south-east) flip horizontal for south-west
+          } else {
+            row = 0; // fallback swimming and catching
+          }
+        } else {
+          // Moving not catching
+          if (dx > 0 && dy === 0) {
+            row = 5; // swimming right
+          } else if (dx > 0 && dy < 0) {
+            row = 6; // swimming diagonally north-east
+          } else if (dx > 0 && dy > 0) {
+            row = 8; // swimming diagonally down south-east
+          } else if (dx < 0 && dy === 0) {
+            row = 5; // swimming (right) flipped for left
+          } else if (dx < 0 && dy < 0) {
+            row = 6; // swimming diagonally north-east flipped for north-west
+          } else if (dx < 0 && dy > 0) {
+            row = 8; // swimming diagonally down south-east flipped for south-west
+          } else {
+            row = 5; // fallback swimming right
+          }
+        }
+      }
+
+      player.facingLeft = dx < 0;
 
       player.x += dx * player.speed;
       player.y += dy * player.speed;
 
       player.x = Math.max(0, Math.min(canvas.width - DRAW_WIDTH, player.x));
       player.y = Math.max(0, Math.min(canvas.height - DRAW_HEIGHT, player.y));
-
-      if (player.catching) {
-        row = dx || dy ? 0 : 2;
-      } else {
-        row = dx || dy ? 5 : 4;
-      }
     }
 
     function drawFrame() {
@@ -222,6 +272,44 @@
       requestAnimationFrame(gameLoop);
     }
 
+    // Cannon animation
+    const cannonCanvas = document.getElementById("cannonCanvas");
+    const cannonCtx = cannonCanvas.getContext("2d");
+
+    const cannonSheet = new Image();
+    cannonSheet.src = "./assets/cannon_spritesheet.png";
+
+    let cannonFrame = 0;
+    const cannonFrameCount = 6; // Adjust based on your spritesheet
+    const cannonFrameWidth = 48; // Adjust to your actual sprite width
+    const cannonFrameHeight = 48;
+    const cannonDrawSize = 144; // To scale up 3x
+    let lastCannonTime = 0;
+    const cannonDelay = 150;
+
+    function animateCannon(timestamp) {
+      if (timestamp - lastCannonTime > cannonDelay) {
+        cannonFrame = (cannonFrame + 1) % cannonFrameCount;
+        lastCannonTime = timestamp;
+      }
+
+      cannonCtx.clearRect(0, 0, cannonCanvas.width, cannonCanvas.height);
+
+      cannonCtx.drawImage(
+        cannonSheet,
+        cannonFrame * cannonFrameWidth, 0,
+        cannonFrameWidth, cannonFrameHeight,
+        (cannonCanvas.width - cannonDrawSize) / 2, // center X
+        (cannonCanvas.height - cannonDrawSize) / 2, // center Y
+        cannonDrawSize, cannonDrawSize
+      );
+
+      requestAnimationFrame(animateCannon);
+    }
+
+    cannonSheet.onload = () => requestAnimationFrame(animateCannon);
+
+
     document.getElementById("startBtn").addEventListener("click", () => {
       document.querySelector(".start-screen").style.display = "none";
       document.querySelector("h1").style.display = "block";
@@ -232,3 +320,4 @@
   </script>
 </body>
 </html>
+
