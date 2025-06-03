@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Swim & Catch Game</title>
+  <main class="container">
+        <div class="row">
+              <section class="mt-5 text-center container bg-light p-0">
+                  <img src="./assets/SafeSwimmerBanner.png" alt="Banner" class="img-fluid banner"/>
+              </section>
+        </div>
+  </main>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -19,24 +26,25 @@
     .main-wrapper {
       display: flex;
       align-items: center;
-      gap: 40px;
+      gap: 20px; /* Reduced gap for better fit */
       display: none;
     }
 
     .game-container {
       border: 5px solid rgb(25, 21, 80);
-      padding: 10px;
+      padding: 5px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       position: relative;
       background-image: url('./assets/pool_background.png');
-      background-size: cover;
       background-position: center;
+      width: 1000px; /* Set a specific width */
+      height: 400px; /* Set a specific height */
     }
 
     .cannon-container {
-      width: 300px;
-      height: 600px;
+      width: 200px; /* Adjusted width */
+      height: 400px; /* Adjusted height */
       background-color: #d1f0ee;
       display: flex;
       justify-content: center;
@@ -50,36 +58,57 @@
       height: 144px;
     }
 
+    .image-container {
+      width: 50%; /* Adjust as needed */
+      overflow: hidden; /* Hide overflow if necessary */
+    }
+
+    .instructions {
+      width: 60%; /* Make the image fill the container */
+      height: auto; /* Maintain aspect ratio */
+      align-items: center;
+    }
+
     .start-screen {
       text-align: center;
     }
 
     .instructions {
+      align-items: center;
+      width: 50%;
       margin-bottom: 20px;
     }
 
     #startBtn {
       padding: 10px 20px;
       font-size: 18px;
-      background-color: #00796b;
+      background-color: #418aa3;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+
+    /* New styles for the banner */
+    .banner {
+      width: 100%; /* Full width of the viewport */
+      height: auto; /* Maintain aspect ratio */
+      max-width: 1000px; /* Limit max width to banner size */
+    }
+
   </style>
 </head>
 <body>
   <div class="start-screen">
     <img src="./assets/instructions.png" alt="Game Instructions" class="instructions" />
-    <button id="startBtn">Start Game</button>
+    <br><button id="startBtn"> Click to Start Game</button>
   </div>
 
-  <h1 style="display:none;">Swim & Catch</h1>
+  <h1 style="display:none;"></h1>
 
   <div class="main-wrapper">
     <div class="game-container">
-      <canvas id="gameCanvas" width="900" height="600"></canvas>
+      <canvas id="gameCanvas" width="1000" height="400"></canvas>
     </div>
 
     <div class="cannon-container">
