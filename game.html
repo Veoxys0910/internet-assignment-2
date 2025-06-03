@@ -79,7 +79,7 @@
       margin-bottom: 20px;
     }
 
-    #startBtn {
+    .btn {
       padding: 10px 20px;
       font-size: 18px;
       background-color: #418aa3;
@@ -101,252 +101,31 @@
 <body>
   <div class="start-screen">
     <img src="./assets/instructions.png" alt="Game Instructions" class="instructions" />
-    <br><button id="startBtn"> Click to Start Game</button>
+    <br><button id="startBtn" class="btn"> Click to Start Game</button>
+    <br><br><button id="durationBtn" class="btn">Set Duration To 2 Minutes</button>
+    <br><br><a href="./index.html">
+      <button id="homeBtn" class="btn">Return Home</button>
+    </a>
   </div>
 
   <h1 style="display:none;"></h1>
 
   <div class="main-wrapper">
     <div class="game-container">
+      <h1 id="score" style="color: white; -webkit-text-stroke: 2px black; position: absolute;">VINCE</h1>
+      <h1 id="timer" style="color: white; -webkit-text-stroke: 2px black; position: absolute; top: 50px;">VINCE</h1>
+      <div id="winScreen" style="position: absolute; left: 350px; top: 100px; display: none;">
+        <h1 style="color: white; -webkit-text-stroke: 2px black; margin-left: 60px;">Well Done!</h1>
+        <button id="playAgainBtn" class="btn">Play Again?</button>
+        <button id="homeBtn2" class="btn">Return Home</button>
+        <br><br><button id="durationBtn2" class="btn" style="margin-left: 15px;">Set Duration To 2 Minutes</button>
+      </div>
+      
       <canvas id="gameCanvas" width="1000" height="400"></canvas>
-    </div>
-
-    <div class="cannon-container">
-      <canvas id="cannonCanvas" width="144" height="144"></canvas>
     </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const sheet = new Image();
-    sheet.src = "./assets/spritesheet_zoro.png";
-
-    let frame = 0;
-    const frameCount = 6;
-    let row = 4;
-    let lastFrameTime = 0;
-    const frameDelay = 130;
-
-    const player = {
-      x: 300,
-      y: 300,
-      speed: 2,
-      dx: 0,
-      dy: 0,
-      catching: false,
-      facingLeft: false
-    };
-
-    const keys = {};
-    document.addEventListener("keydown", (e) => {
-      keys[e.key.toLowerCase()] = true;
-      if (e.key === " ") player.catching = true;
-    });
-    document.addEventListener("keyup", (e) => {
-      keys[e.key.toLowerCase()] = false;
-      if (e.key === " ") player.catching = false;
-    });
-
-    const SPRITE_WIDTH = 48;
-    const SPRITE_HEIGHT = 48;
-    const SCALE = 2;
-    const DRAW_WIDTH = SPRITE_WIDTH * SCALE;
-    const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
-
-    function updateDirection() {
-      let dx = 0, dy = 0;
-      if (keys["w"]) dy = -1;
-      if (keys["s"]) dy = 1;
-      if (keys["a"]) dx = -1;
-      if (keys["d"]) dx = 1;
-
-      player.dx = dx;
-      player.dy = dy;
-
-      // Movement rows logic per character sheet:
-      // row 0 - swimming and catching (row 1)
-      // row 1 - swimming diagonally catching (row 2)
-      // row 2 - idle swim catching (row 3)
-      // row 3 - game over (row 4) - not used here
-      // row 4 - idle swim (row 5)
-      // row 5 - swimming (right) (row 6)
-      // row 6 - swimming diagonally (north-east) (row 7)
-      // row 7 - swimming diagonally down catching (south-east) (row 8)
-      // row 8 - swimming diagonally down (south-east) (row 9)
-
-      if (dx === 0 && dy === 0) {
-        // No movement
-        if (player.catching) {
-          row = 2; // idle swim catching
-        } else {
-          row = 4; // idle swim
-        }
-      } else {
-        // Moving
-        if (player.catching) {
-          // Catching + movement
-          if (dx > 0 && dy === 0) {
-            row = 0; // swimming and catching
-          } else if (dx > 0 && dy < 0) {
-            row = 1; // swimming diagonally catching (north-east)
-          } else if (dx > 0 && dy > 0) {
-            row = 7; // swimming diagonally down catching (south-east)
-          } else if (dx < 0 && dy === 0) {
-            row = 0; // swimming and catching (flip for left)
-          } else if (dx < 0 && dy < 0) {
-            row = 1; // swimming diagonally catching (north-east) flip horizontal for north-west
-          } else if (dx < 0 && dy > 0) {
-            row = 7; // swimming diagonally down catching (south-east) flip horizontal for south-west
-          } else {
-            row = 0; // fallback swimming and catching
-          }
-        } else {
-          // Moving not catching
-          if (dx > 0 && dy === 0) {
-            row = 5; // swimming right
-          } else if (dx > 0 && dy < 0) {
-            row = 6; // swimming diagonally north-east
-          } else if (dx > 0 && dy > 0) {
-            row = 8; // swimming diagonally down south-east
-          } else if (dx < 0 && dy === 0) {
-            row = 5; // swimming (right) flipped for left
-          } else if (dx < 0 && dy < 0) {
-            row = 6; // swimming diagonally north-east flipped for north-west
-          } else if (dx < 0 && dy > 0) {
-            row = 8; // swimming diagonally down south-east flipped for south-west
-          } else {
-            row = 5; // fallback swimming right
-          }
-        }
-      }
-
-      player.facingLeft = dx < 0;
-
-      player.x += dx * player.speed;
-      player.y += dy * player.speed;
-
-      player.x = Math.max(0, Math.min(canvas.width - DRAW_WIDTH, player.x));
-      player.y = Math.max(0, Math.min(canvas.height - DRAW_HEIGHT, player.y));
-    }
-
-    function drawFrame() {
-      ctx.save();
-      ctx.translate(player.x + (player.facingLeft ? DRAW_WIDTH : 0), player.y);
-      if (player.facingLeft) ctx.scale(-1, 1);
-      ctx.drawImage(sheet, frame * SPRITE_WIDTH, row * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, DRAW_WIDTH, DRAW_HEIGHT);
-      ctx.restore();
-    }
-
-    let ballX = null, ballY = null, ballRadius = 15;
-    let colorIndex = 0;
-    const rainbowColors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
-
-    function drawBall() {
-      if (ballX !== null && ballY !== null) {
-        ctx.fillStyle = rainbowColors[colorIndex];
-        ctx.beginPath();
-        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function updateBall() {
-      if (ballX !== null) {
-        ballX -= 3;
-        if (ballX < -ballRadius) {
-          ballX = null;
-          ballY = null;
-        }
-      }
-    }
-
-    function checkCollision() {
-      if (!player.catching || ballX === null) return;
-      const px = player.x + DRAW_WIDTH / 2;
-      const py = player.y + DRAW_HEIGHT / 2;
-      if (Math.abs(ballX - px) < DRAW_WIDTH / 2 && Math.abs(ballY - py) < DRAW_HEIGHT / 2) {
-        ballX = null;
-        ballY = null;
-        console.log("Caught!");
-      }
-    }
-
-    function spawnBall() {
-      if (ballX === null) {
-        ballX = canvas.width - 50;
-        ballY = Math.random() * (canvas.height - 30) + 15;
-        colorIndex = (colorIndex + 1) % rainbowColors.length;
-      }
-    }
-
-    function startAutoFiring() {
-      setInterval(spawnBall, 2000);
-    }
-
-    function gameLoop(timestamp) {
-      updateDirection();
-      updateBall();
-      checkCollision();
-
-      if (timestamp - lastFrameTime > frameDelay) {
-        frame = (frame + 1) % frameCount;
-        lastFrameTime = timestamp;
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBall();
-      drawFrame();
-      requestAnimationFrame(gameLoop);
-    }
-
-    // Cannon animation
-    const cannonCanvas = document.getElementById("cannonCanvas");
-    const cannonCtx = cannonCanvas.getContext("2d");
-
-    const cannonSheet = new Image();
-    cannonSheet.src = "./assets/cannon_spritesheet.png";
-
-    let cannonFrame = 0;
-    const cannonFrameCount = 6; // Adjust based on your spritesheet
-    const cannonFrameWidth = 48; // Adjust to your actual sprite width
-    const cannonFrameHeight = 48;
-    const cannonDrawSize = 144; // To scale up 3x
-    let lastCannonTime = 0;
-    const cannonDelay = 150;
-
-    function animateCannon(timestamp) {
-      if (timestamp - lastCannonTime > cannonDelay) {
-        cannonFrame = (cannonFrame + 1) % cannonFrameCount;
-        lastCannonTime = timestamp;
-      }
-
-      cannonCtx.clearRect(0, 0, cannonCanvas.width, cannonCanvas.height);
-
-      cannonCtx.drawImage(
-        cannonSheet,
-        cannonFrame * cannonFrameWidth, 0,
-        cannonFrameWidth, cannonFrameHeight,
-        (cannonCanvas.width - cannonDrawSize) / 2, // center X
-        (cannonCanvas.height - cannonDrawSize) / 2, // center Y
-        cannonDrawSize, cannonDrawSize
-      );
-
-      requestAnimationFrame(animateCannon);
-    }
-
-    cannonSheet.onload = () => requestAnimationFrame(animateCannon);
-
-
-    document.getElementById("startBtn").addEventListener("click", () => {
-      document.querySelector(".start-screen").style.display = "none";
-      document.querySelector("h1").style.display = "block";
-      document.querySelector(".main-wrapper").style.display = "flex";
-      startAutoFiring();
-      requestAnimationFrame(gameLoop);
-    });
-  </script>
+  <script src="./game.js"></script>
 </body>
 </html>
 
