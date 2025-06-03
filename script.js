@@ -41,6 +41,32 @@ function initForm() {
         checkInInput.value = "";
         checkOutInput.value = "";
     });
+
+    document.getElementById("edit-booking-button").addEventListener('click', () => {
+        // Return to booking form with previous fields intact
+        form2.style.display = 'none';
+        form1.style.display = 'block';
+    });
+
+    document.getElementById("confirm-booking-button").addEventListener('click', () => {
+        // Show confirmation alert or message
+        alert("The area has been reserved!");
+
+        // Clear form fields (reset to defaults)
+        capacityInput.value = 1;
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        checkInInput.value = today.toISOString().split('T')[0];
+        checkOutInput.value = tomorrow.toISOString().split('T')[0];
+
+        // Reset area visibility to visible, remove any filtering
+        areaDivs.forEach(area => area.style.display = 'block');
+
+        // Return to the booking form page
+        form2.style.display = 'none';
+        form1.style.display = 'block';
+    });
 }
 
 function loadXMLAreas() {
@@ -115,22 +141,19 @@ function calculateOrder(areaDiv) {
     let checkOutDate = new Date(checkOutInput.value);
     let days = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
     
-    // Get the index of the clicked area
     let index = areaDivs.indexOf(areaDiv);
     let capacity = capacities[index];
     let cost = costs[index];
-    let areaId = areaIds[index]; // Get the area ID
-    let image = images[index]; // Get the image
+    let areaId = areaIds[index]; 
+    let image = images[index]; 
 
-    // Update the booking summary
     document.getElementById("check-in-summary").innerText = checkInInput.value;
     document.getElementById("check-out-summary").innerText = checkOutInput.value;
     document.getElementById("capacity-summary").innerText = capacity;
     document.getElementById("price-summary").innerText = `$${cost * days}`; // Total cost based on days
 
-    // Optionally, you can display the area ID and image in the summary
-    document.getElementById("area-id-summary").innerText = areaId; // Add this line to show area ID
-    document.getElementById("area-image-summary").src = image; // Add this line to show area image
+    document.getElementById("area-id-summary").innerText = areaId; 
+    document.getElementById("area-image-summary").src = image; 
 }
 
 function restrictDates() {

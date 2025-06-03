@@ -18,7 +18,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Interactive Map</a>
+                        <a class="nav-link active" href="index.html">Interactive Map</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="game.html">Video Game</a> 
@@ -28,8 +28,8 @@
                         Wireframes and Storyboards
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Part 1</a></li>
-                            <li><a class="dropdown-item" href="#">Part 2</a></li>
+                            <li><a class="dropdown-item" href=".\assets\Wireframe Website and Game Part 1.pdf">Part 1</a></li>
+                            <li><a class="dropdown-item" href=".\assets\Wireframe Website and Game Part 1.pdf">Part 2</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Videogame Storyboard</a></li>
                         </ul>
@@ -99,18 +99,22 @@
                     <th>Check Out Date</th>
                     <th>Capacity</th>
                     <th>Price</th>
-                    <th>Area ID</th> <!-- New column for Area ID -->
-                    <th>Area Image</th> <!-- New column for Area Image -->
+                    <th>Area ID</th> 
+                    <th>Area Image</th> 
                 </tr>
                 <tr id="summary-row">
                     <td id="check-in-summary">N/A</td>
                     <td id="check-out-summary">N/A</td>
                     <td id="capacity-summary">N/A</td>
                     <td id="price-summary">N/A</td>
-                    <td id="area-id-summary">N/A</td> <!-- New cell for Area ID -->
-                    <td><img id="area-image-summary" src="" alt="Area Image" style="width: 500px; height: auto;"></td> <!-- New cell for Area Image -->
+                    <td id="area-id-summary">N/A</td> 
+                    <td><img id="area-image-summary" src="" alt="Area Image" style="width: 500px; height: auto;"></td> 
                 </tr>
             </table>
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                <button id ="edit-booking-button" style="padding: 10px 20px; font-size: 16px; margin-right: 10px;">Edit Booking</button>
+                <button id ="confirm-booking-button" style="padding: 10px 20px; font-size: 16px;">Confirm Booking</button>
+            </div>
         </div>
     </main>
 
@@ -120,7 +124,7 @@
             max-width: 610px;
             min-width: 300px;
             min-height: 400px;
-            position: relative; /* Ensures proper stacking with other elements */
+            position: relative; 
         }
 
         #map {
@@ -160,10 +164,59 @@
         }
         .instruction-item {
             border: 2px solid rgba(173, 216, 230, 0.2);
-            background-color: rgba(173, 216, 230, 0.2); /* Light blue with 50% opacity */
+            background-color: rgba(173, 216, 230, 0.2); 
             padding: 5px;
             margin: 10px 0; 
             border-radius: 2px; 
+        }
+
+        #summary-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #summary-table thead tr {
+            background-color: #709ccc; /* Blue header */
+            color: white;
+            text-align: center;
+        }
+
+        #summary-table th, #summary-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        #summary-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #summary-table tbody tr:hover {
+            background-color: #e9f5ff;
+        }
+
+        #summary-table thead th:first-child {
+            border-top-left-radius: 10px;
+        }
+        #summary-table thead th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        #summary-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+        #summary-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        #summary-table td img {
+            border-radius: 8px;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.1);
         }
 
         ol {
