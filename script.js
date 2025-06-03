@@ -1,8 +1,10 @@
 window.addEventListener("load", init);
 
-let areaDivs = new Array();
-let capacities = new Array();
-let costs = new Array();
+let areaDivs = [];
+let capacities = [];
+let costs = [];
+let images = []; // Array to store images
+let areaIds = []; // Array to store area IDs
 
 let capacityInput;
 let checkInInput;
@@ -12,9 +14,9 @@ let form1;
 let form2;
 
 function init() {
-    //loadMapPoints();     // Loads default map points
     loadXMLAreas();      // Loads interactive area data from XML
     initForm();
+    restrictDates();     // Initialize date restrictions
 }
 
 function initForm() {
@@ -26,25 +28,15 @@ function initForm() {
     form1 = document.getElementById('page_1');
     form2 = document.getElementById('page_2');
 
-    searchButton.addEventListener('click', (e) => {
+    searchButton.addEventListener('click', () => {
         let capacity = capacityInput.value;
-
         for (let i = 0; i < capacities.length; i++) {
-            if (capacities[i] != capacity || areaDivs[i].classList.contains('booked')) {
-                areaDivs[i].style.display = 'none';
-            } else {
-                areaDivs[i].style.display = 'block';
-            }
+            areaDivs[i].style.display = (capacities[i] == capacity && !areaDivs[i].classList.contains('booked')) ? 'block' : 'none';
         }
     });
 
-    let clearButton = document.getElementById("clear_button");
-
-    clearButton.addEventListener('click', (e) => {
-        for (let i = 0; i < areaDivs.length; i++) {
-            areaDivs[i].style.display = 'block';
-        }
-
+    document.getElementById("clear_button").addEventListener('click', () => {
+        areaDivs.forEach(area => area.style.display = 'block');
         capacityInput.value = 1;
         checkInInput.value = "";
         checkOutInput.value = "";
@@ -65,11 +57,6 @@ function loadXMLAreas() {
             const hoverImg = document.getElementById('hover-img');
             const hoverInfo = document.getElementById('hover-info');
 
-            if (!container || !hoverPreview || !hoverImg || !hoverInfo) {
-                console.error("Missing required HTML elements.");
-                return;
-            }
-
             for (let area of areas) {
                 let id = area.getAttribute('id');
                 let x = parseInt(area.getAttribute('x'));
@@ -77,9 +64,12 @@ function loadXMLAreas() {
                 let booked = area.getAttribute('booked') === 'true';
                 let image = area.getAttribute('image');
                 let capacity = area.getAttribute('capacity');
-                capacities.push(Number(capacity));
                 let cost = area.getAttribute('cost');
+
+                capacities.push(Number(capacity));
                 costs.push(Number(cost));
+                images.push(image); // Store image
+                areaIds.push(id); // Store area ID
 
                 let areaDiv = document.createElement('div');
                 areaDiv.classList.add('map-area');
@@ -88,11 +78,9 @@ function loadXMLAreas() {
                 areaDiv.style.top = `${y}px`;
                 areaDiv.style.width = '20px';
                 areaDiv.style.height = '20px';
-
                 if (booked) areaDiv.classList.add('booked');
 
-                // Hover event
-                areaDiv.addEventListener('mouseover', (e) => {
+                areaDiv.addEventListener('mouseover', () => {
                     hoverImg.src = image;
                     hoverInfo.innerHTML = `
                         <strong>ID:</strong> ${id}<br/>
@@ -103,55 +91,59 @@ function loadXMLAreas() {
                     hoverPreview.style.display = 'block';
                     hoverPreview.style.left = `${x + 30}px`;
                     hoverPreview.style.top = `${y - 100}px`;
-
-                    if (areaDiv.classList.contains('booked')) {
-                        hoverPreview.style.backgroundColor = "rgba(220, 53, 69, 0.6)";
-                    } else {
-                        hoverPreview.style.backgroundColor = "rgb(98, 252, 175, 0.6)";
-                    }
-
-                    if (x >= 400) {
-                        hoverPreview.style.left = `${x - 520}px`;
-                    }
                 });
 
                 areaDiv.addEventListener('mouseout', () => {
                     hoverPreview.style.display = 'none';
                 });
 
-                container.appendChild(areaDiv);
-
-                areaDivs.push(areaDiv);
-
-                areaDiv.addEventListener('click', (e)=> {
-                    let index = areaDivs.indexOf(areaDiv);
-
+                areaDiv.addEventListener('click', () => {
                     form1.style.display = 'none';
                     form2.style.display = 'block';
-
-                    calculateOrder(index);
+                    calculateOrder(areaDiv);
                 });
+
+                container.appendChild(areaDiv);
+                areaDivs.push(areaDiv);
             }
         })
         .catch(err => console.error("Error loading XML areas:", err));
 }
 
-function calculateOrder(p_areaDivIndex) {
-    let checkInDate = checkInInput.value;
-    let checkOutDate = checkOutInput.value;
-    let capacity = capacities[p_areaDivIndex];
-    let cost = costs[p_areaDivIndex];
+function calculateOrder(areaDiv) {
+    let checkInDate = new Date(checkInInput.value);
+    let checkOutDate = new Date(checkOutInput.value);
+    let days = Math.round((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+    
+    // Get the index of the clicked area
+    let index = areaDivs.indexOf(areaDiv);
+    let capacity = capacities[index];
+    let cost = costs[index];
+    let areaId = areaIds[index]; // Get the area ID
+    let image = images[index]; // Get the image
 
-    let checkInSummary = document.getElementById("check-in-summary");
-    let checkOutSummary = document.getElementById("check-out-summary");
-    let capacitySummary = document.getElementById("capacity-summary");
-    let costSummary = document.getElementById("price-summary");
+    // Update the booking summary
+    document.getElementById("check-in-summary").innerText = checkInInput.value;
+    document.getElementById("check-out-summary").innerText = checkOutInput.value;
+    document.getElementById("capacity-summary").innerText = capacity;
+    document.getElementById("price-summary").innerText = `$${cost * days}`; // Total cost based on days
 
-    checkInSummary.innerText = checkInDate;
-    checkOutSummary.innerText = checkOutDate;
-    capacitySummary.innerText = capacity;
-    costSummary.innerText = cost;
+    // Optionally, you can display the area ID and image in the summary
+    document.getElementById("area-id-summary").innerText = areaId; // Add this line to show area ID
+    document.getElementById("area-image-summary").src = image; // Add this line to show area image
 }
+
+function restrictDates() {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    checkInInput.setAttribute('min', today.toISOString().split('T')[0]);
+    checkOutInput.setAttribute('min', tomorrow.toISOString().split('T')[0]);
+    checkInInput.value = today.toISOString().split('T')[0];
+    checkOutInput.value = tomorrow.toISOString().split('T')[0];
+}
+
+
 
 function loadMapPoints() {
     let map = document.getElementById("interactive-areas");
