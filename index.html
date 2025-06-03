@@ -46,7 +46,7 @@
                 </section>
             </div>
 
-            <div class="instructions">
+            <div class="instructions" id="page_1">
                 <h1>Reserved Area Booking</h1>
                 <div class ="row">
                     <!--Instructions Part--> 
@@ -60,7 +60,7 @@
                             <li class="instruction-item">Select an available area</li>
                             <li class="instruction-item">Submit booking</li>
                         </ol>
-                        <form>
+                        <form id="form_page_1" style="display: block;">
                             <div class="form-group">
                                 <label for="checkIn">Check-In: </label>
                                 <input type="date" class="form-control" id="checkIn" placeholder="DD/MM/YYYY">
@@ -73,13 +73,18 @@
                                 <label for="capacity">Capacity: </label>
                                 <input type="number" class="form-control" id="capacity" min="1" value="1">
                             </div><br>
-                            <button type="button" class="btn btn-primary">Search</button>
+                            <button type="button" class="btn btn-primary" id="search_button">Search</button>
+                            <button type="button" class="btn btn-primary" id="clear_button">Clear</button>
+                        </form>
+
+                        <form id="form_page_2" style="display: none;">
+                            <h1>VINCE</h1>
                         </form>
                     </div>                    
 
                     <!--Interactive Map!--> 
                     <div class="d-flex align-items-center justify-content-center col-sm-12 col-md-6" id="map-container">
-                    <div id="map-container" style="position: relative; width: 600px; height: 600px;">
+                    <div style="position: relative; width: 600px; height: 600px;">
                     <img src="./assets/map-no-points.png" class="img-fluid" id="map" alt="Interactive Map Not Loaded...">
                     <div id="interactive-areas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                     <div id="hover-preview" style="width: 500px; height: 400px; position: absolute; display: none; background: rgb(98, 252, 175, 0.6); color: #000000; padding: 10px; border-radius: 5px; z-index: 9999;">
@@ -89,6 +94,25 @@
                 </div>
             </div>
         </main>
+
+        <div id="page_2" style="display: none;">
+            <table id="summary-table">
+                <tr id="header-row">
+                    <th>Check In Date</th>
+                    <th>Check Out Date</th>
+                    <th>Capacity</th>
+                    <th>Price</th>
+                </tr>
+
+                <tr id="summary-row">
+                    <td id="check-in-summary">Test</td>
+                    <td id="check-out-summary">Test</td>
+                    <td id="capacity-summary">Test</td>
+                    <td id="price-summary">Test</td>
+                </tr>
+
+                <div id="hover-preview" style="width: 500px; height: 400px; position: absolute; display: none; background: rgb(98, 252, 175, 0.6); color: #000000; padding: 10px; border-radius: 5px; z-index: 9999;"></div>
+        </div>
     </body>
 
     <!--Included the styles here to avoid additional HTTPS reqs (feel free to change this)-->
@@ -157,6 +181,29 @@
             font-family: "Papyrus", sans-serif;
             font-weight: bold; 
             color: black; 
+        }
+
+        .form-table, #summary-table {
+            margin: 0px auto;
+            margin-bottom: 10px;
+        }
+
+        #summary-table {
+            border-collapse: collapse;
+        }
+
+        #header-row {
+            background-color: #00bfff;
+            color: #fff;
+        }
+
+        #header-row>th, #summary-row>td {
+            text-align: left;
+            padding-right: 5px;
+        }
+
+        #summary-row>td {
+            border: 1px solid #dddddd;
         }
     </style>
 </html>
