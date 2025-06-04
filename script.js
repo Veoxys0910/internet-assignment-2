@@ -31,7 +31,7 @@ function initForm() {
     searchButton.addEventListener('click', () => {
         let capacity = capacityInput.value;
         for (let i = 0; i < capacities.length; i++) {
-            areaDivs[i].style.display = (capacities[i] == capacity && !areaDivs[i].classList.contains('booked')) ? 'block' : 'none';
+            areaDivs[i].style.display = (capacities[i] >= capacity && !areaDivs[i].classList.contains('booked')) ? 'block' : 'none';
         }
     });
 
