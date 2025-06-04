@@ -147,6 +147,11 @@ function loadXMLAreas() {
                         return;
                     }
 
+                    if (checkInInput.value == '' || checkOutInput.value == '') {
+                        alert("Invalid Dates.");
+                        return;
+                    }
+
                     form1.style.display = 'none';
                     form2.style.display = 'block';
                     calculateOrder(areaDiv);
