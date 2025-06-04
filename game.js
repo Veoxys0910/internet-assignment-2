@@ -271,6 +271,9 @@ function drawBall() {
     }
 }
 
+let fail = new Audio("./assets/fail.mp3");
+fail.volume = 0.4;
+
 function updateBall() {
     for (let i = 0; i < balls.length; i++) {
         if (balls[i].sinking) {
@@ -283,7 +286,10 @@ function updateBall() {
                   balls[i].ballRadius -= 0.05;
             } else {
                 balls.splice(i, 1);
-                updateLaunch = false;
+                
+                if (fail.paused || fail.ended || fail.currentTime <= 0) {
+                    fail.play();
+                }
             }
         }
 
@@ -316,9 +322,9 @@ function checkCollision() {
 
 function spawnBall() {
     let ballX = Math.random() * (canvas.width - 30) + 15;
-    let ballY = 25;
+    let ballY = 0;
     colorIndex = (colorIndex + 1) % rainbowColors.length;
-    let desiredY = Math.random() * (Math.random() * (canvas.height - 200) + 200);
+    let desiredY = Math.random() * (350 - 200 + 1) + 200;
 
     balls.push({
         ballX: ballX,
