@@ -310,7 +310,7 @@ function checkCollision() {
         const py = player.y + DRAW_HEIGHT / 2;
         if (Math.abs(balls[i].ballX - px) < DRAW_WIDTH / 2 && Math.abs(balls[i].ballY - py) < DRAW_HEIGHT / 2) {
             balls.splice(i, 1);
-            score += Number(10);
+            score++;
 
             let sound = new Audio("./assets/success.mp3");
             sound.play();
@@ -376,17 +376,17 @@ function gameLoop(timestamp) {
 
 let reach100 = false;
 let reach200 = false;
-let bigScore = 300;
+let bigScore = 30;
 
 function scoreSound() {
-    if (score == 100 && !reach100) {
+    if (score == 10 && !reach100) {
         let sound = new Audio("./assets/100.mp4");
 
         sound.play();
 
         reach100 = true;
     }
-    else if (score == 200 && !reach200) {
+    else if (score == 20 && !reach200) {
         let sound = new Audio("./assets/200.mp4");
 
         sound.play();
@@ -398,6 +398,6 @@ function scoreSound() {
 
         sound.play();
 
-        bigScore += 50;
+        bigScore += 5;
     }
 }
