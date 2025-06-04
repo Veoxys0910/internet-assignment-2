@@ -1,0 +1,13 @@
+<areas>
+  <area id="a1" capacity="5" cost="45" booked="false" image="./assets/area1.jpg" x="95" y="335" />
+  <area id="a2" capacity="50" cost="300" booked="false" image="./assets/area2.jpg" x="33" y="250" />
+  <area id="a3" capacity="5" cost="80" booked="true" image="./assets/area3.jpg" x="100" y="200" />
+  <area id="a4" capacity="5" cost="45" booked="true" image="./assets/area4.jpg" x="80" y="100" />
+  <area id="a5" capacity="20" cost="120" booked="false" image="./assets/area5.jpg" x="235" y="32" />
+  <area id="a6" capacity="5" cost="90" booked="false" image="./assets/area6.png" x="400" y="120" />
+  <area id="a7" capacity="10" cost="60" booked="true" image="./assets/area7.jpg" x="510" y="45" />
+  <area id="a8" capacity="10" cost="150" booked="false" image="./assets/area8.png" x="470" y="230" />
+  <area id="a9" capacity="5" cost="80" booked="true" image="./assets/area9.jpg" x="250" y="210" />
+  <area id="a10" capacity="20" cost="200" booked="false" image="./assets/area10.jpg" x="310" y="330" />
+</areas>
+

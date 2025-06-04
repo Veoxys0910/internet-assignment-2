@@ -1,39 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Swimming Pool Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e0f7fa;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            color: #aae2db;
-        }
-        .game-container {
-            border: 5px solid rgb(25, 21, 80);
-            background-color: rgb(164, 224, 215);
-            padding: 20px;
-            margin: auto;
-            border-radius: 12px;
-            display: inline-block;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Swim & Catch Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e0f7fa;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .main-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .game-container {
+      border: 5px solid rgb(25, 21, 80);
+      background-color: rgb(164, 224, 215);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .cannon-container {
+      width: 300px;
+      height: 300px;
+      border: 3px dashed rgb(80, 60, 60);
+      background-color: #d1f0ee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+    }
+
+    h1 {
+      position: absolute;
+      top: 20px;
+      text-align: center;
+      width: 100%;
+      color: #00796b;
+    }
+  </style>
 </head>
 <body>
-    <h1>Swim & Catch</h1>
-    <p>Use W, A, S, D to swim. Press Spacebar to catch!</p>
+  <h1>Swim & Catch</h1>
+
+  <div class="main-wrapper">
     <div class="game-container">
-        <canvas id="gameCanvas" width="900" height="600"></canvas>
+      <canvas id="gameCanvas" width="900" height="600"></canvas>
     </div>
 
-    <script>
+    <div class="cannon-container">
+      <!--<img id="cannonImg" src="./assets/cannon_spritesheet.png" alt="Cannon" style="width: 48px; height: 48px;">-->
+    </div>
+  </div>
+
+  <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -44,98 +73,243 @@
     const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
 
     const sheet = new Image();
-    sheet.src = "./assets/spritesheet_zoro.png"; // update path as needed
+    sheet.src = "./assets/spritesheet_zoro.png";
+
+    const cannonSheet = new Image();
+    cannonSheet.src = "./assets/cannon_spritesheet.png";
 
     let frame = 0;
-    let frameCount = 6;
+    const frameCount = 6;
     let row = 4;
     let lastFrameTime = 0;
     const frameDelay = 130;
 
     const player = {
-        x: 300,
-        y: 300,
-        speed: 1.5,
-        dx: 0,
-        dy: 0,
-        catching: false,
-        facingLeft: false
+      x: 300,
+      y: 300,
+      speed: 1.5,
+      dx: 0,
+      dy: 0,
+      catching: false,
+      facingLeft: false
     };
 
     const keys = {};
 
-    document.addEventListener("keydown", e => {
-        keys[e.key.toLowerCase()] = true;
-        if (e.key === " ") player.catching = true;
+    // Cannon animation vars and scaling
+    let cannonFrame = 0;
+    const cannonFrameCount = 6;
+    const cannonFrameDelay = 100;
+    let lastCannonFrameTime = 0;
+    let cannonAnimating = false;
+    let isCannonFiring = false;
+
+    // Cannon drawing constants for bigger size
+    const CANNON_WIDTH = 48;
+    const CANNON_HEIGHT = 48;
+    const CANNON_SCALE = 3; // Bigger scale!
+    const CANNON_DRAW_WIDTH = CANNON_WIDTH * CANNON_SCALE;
+    const CANNON_DRAW_HEIGHT = CANNON_HEIGHT * CANNON_SCALE;
+    const CANNON_X = canvas.width - CANNON_DRAW_WIDTH - 10; // 10 px padding from right
+    const CANNON_Y = canvas.height / 2 - CANNON_DRAW_HEIGHT / 2;
+
+    let ballX = null;
+    let ballY = null;
+    let ballRadius = 15;
+
+    document.addEventListener("keydown", (e) => {
+      keys[e.key.toLowerCase()] = true;
+      if (e.key === " ") player.catching = true;
+
+      if (e.key === "Enter" && !cannonAnimating) {
+        cannonAnimating = true;
+        cannonFrame = 0;
+        lastCannonFrameTime = 0;
+      }
     });
 
-    document.addEventListener("keyup", e => {
-        keys[e.key.toLowerCase()] = false;
-        if (e.key === " ") player.catching = false;
+    document.addEventListener("keyup", (e) => {
+      keys[e.key.toLowerCase()] = false;
+      if (e.key === " ") player.catching = false;
     });
 
     function updateDirection() {
-        let dx = 0, dy = 0;
-        if (keys["w"]) dy = -1;
-        if (keys["s"]) dy = 1;
-        if (keys["a"]) dx = -1;
-        if (keys["d"]) dx = 1;
+      let dx = 0,
+        dy = 0;
+      if (keys["w"]) dy = -1;
+      if (keys["s"]) dy = 1;
+      if (keys["a"]) dx = -1;
+      if (keys["d"]) dx = 1;
 
-        player.dx = dx;
-        player.dy = dy;
+      player.dx = dx;
+      player.dy = dy;
 
-        if (dx < 0) player.facingLeft = true;
-        else if (dx > 0) player.facingLeft = false;
+      if (dx < 0) player.facingLeft = true;
+      else if (dx > 0) player.facingLeft = false;
 
-        player.x += dx * player.speed;
-        player.y += dy * player.speed;
+      player.x += dx * player.speed;
+      player.y += dy * player.speed;
 
-        if (player.catching) {
-            if (dx === 0 && dy === 0) row = 2;
-            else if (dx !== 0 && dy !== 0) row = 1;
-            else row = 0;
-        } else {
-            if (dx === 0 && dy === 0) row = 4;
-            else if (dx !== 0 && dy !== 0) row = 6;
-            else row = 5;
-        }
+      player.x = Math.max(0, Math.min(canvas.width - DRAW_WIDTH, player.x));
+      player.y = Math.max(0, Math.min(canvas.height - DRAW_HEIGHT, player.y));
+
+      if (player.catching) {
+        if (dx === 0 && dy === 0) row = 2;
+        else if (dx !== 0 && dy !== 0) row = 1;
+        else row = 0;
+      } else {
+        if (dx === 0 && dy === 0) row = 4;
+        else if (dx !== 0 && dy !== 0) row = 6;
+        else row = 5;
+      }
     }
 
     function drawFrame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      if (player.facingLeft) {
+        ctx.translate(player.x + DRAW_WIDTH, player.y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(
+          sheet,
+          frame * SPRITE_WIDTH,
+          row * SPRITE_HEIGHT,
+          SPRITE_WIDTH,
+          SPRITE_HEIGHT,
+          0,
+          0,
+          DRAW_WIDTH,
+          DRAW_HEIGHT
+        );
+      } else {
+        ctx.translate(player.x, player.y);
+        ctx.drawImage(
+          sheet,
+          frame * SPRITE_WIDTH,
+          row * SPRITE_HEIGHT,
+          SPRITE_WIDTH,
+          SPRITE_HEIGHT,
+          0,
+          0,
+          DRAW_WIDTH,
+          DRAW_HEIGHT
+        );
+      }
+      ctx.restore();
+    }
 
-        const sx = frame * SPRITE_WIDTH;
-        const sy = row * SPRITE_HEIGHT;
-        const dx = player.x;
-        const dy = player.y;
+    function drawBall() {
+      if (ballX !== null && ballY !== null) {
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
-        ctx.save();
-        if (player.facingLeft) {
-            ctx.translate(dx + DRAW_WIDTH, dy);
-            ctx.scale(-1, 1);
-        } else {
-            ctx.translate(dx, dy);
+    function updateBall() {
+      if (isCannonFiring && ballX !== null) {
+        ballX -= 4;
+        if (ballX < -ballRadius) {
+          isCannonFiring = false;
+          ballX = null;
+          ballY = null;
+        }
+      }
+    }
+
+    function checkCollision() {
+      if (!player.catching || ballX === null) return;
+
+      const px = player.x + DRAW_WIDTH / 2;
+      const py = player.y + DRAW_HEIGHT / 2;
+
+      const distX = Math.abs(ballX - px);
+      const distY = Math.abs(ballY - py);
+
+      if (distX < DRAW_WIDTH / 2 && distY < DRAW_HEIGHT / 2) {
+        ballX = null;
+        ballY = null;
+        isCannonFiring = false;
+        console.log("Caught!");
+      }
+    }
+
+    function updateCannon(timestamp) {
+      if (!cannonAnimating) return;
+
+      if (timestamp - lastCannonFrameTime > cannonFrameDelay) {
+        lastCannonFrameTime = timestamp;
+
+        cannonFrame++;
+
+        if (cannonFrame >= cannonFrameCount) {
+          cannonAnimating = false;
+          cannonFrame = 0;
         }
 
-        ctx.drawImage(sheet, sx, sy, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, DRAW_WIDTH, DRAW_HEIGHT);
-        ctx.restore();
+        if (cannonFrame === 1) {
+          // Fire ball at start of cannon animation
+          ballX = CANNON_X;
+          ballY = CANNON_Y + CANNON_DRAW_HEIGHT / 2;
+          isCannonFiring = true;
+        }
+      }
+    }
+
+    function drawCannon() {
+      if (!cannonAnimating) {
+        // Draw idle cannon (frame 0)
+        ctx.drawImage(
+          cannonSheet,
+          0,
+          0,
+          CANNON_WIDTH,
+          CANNON_HEIGHT,
+          CANNON_X,
+          CANNON_Y,
+          CANNON_DRAW_WIDTH,
+          CANNON_DRAW_HEIGHT
+        );
+      } else {
+        // Draw animated cannon frame
+        ctx.drawImage(
+          cannonSheet,
+          cannonFrame * CANNON_WIDTH,
+          0,
+          CANNON_WIDTH,
+          CANNON_HEIGHT,
+          CANNON_X,
+          CANNON_Y,
+          CANNON_DRAW_WIDTH,
+          CANNON_DRAW_HEIGHT
+        );
+      }
     }
 
     function gameLoop(timestamp) {
-        updateDirection();
+      updateDirection();
+      updateBall();
+      checkCollision();
 
-        if (timestamp - lastFrameTime > frameDelay) {
-            frame = (frame + 1) % frameCount;
-            lastFrameTime = timestamp;
-        }
+      if (timestamp - lastFrameTime > frameDelay) {
+        frame = (frame + 1) % frameCount;
+        lastFrameTime = timestamp;
+      }
 
-        drawFrame();
-        requestAnimationFrame(gameLoop);
+      updateCannon(timestamp);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawFrame();
+      drawCannon();
+      drawBall();
+
+      requestAnimationFrame(gameLoop);
     }
 
     sheet.onload = () => {
-        requestAnimationFrame(gameLoop);
+      requestAnimationFrame(gameLoop);
     };
-    </script>
+  </script>
 </body>
 </html>
