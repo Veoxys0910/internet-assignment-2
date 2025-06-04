@@ -142,7 +142,7 @@ function loadXMLAreas() {
 
                     let index = areaDivs.indexOf(areaDiv);
 
-                    if (capacityInput.value < capacities[index] || capacityInput.value > capacities[index]) {
+                    if (capacityInput.value > capacities[index]) {
                         alert("The inputted capacity is valid for the Area.");
                         return;
                     }
