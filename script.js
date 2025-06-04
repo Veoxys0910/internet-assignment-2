@@ -35,6 +35,10 @@ function initForm() {
         }
     });
 
+    checkInInput.addEventListener('change', () => {
+        updateCheckoutMinDate();
+    });
+
     document.getElementById("clear_button").addEventListener('click', () => {
         areaDivs.forEach(area => area.style.display = 'block');
         capacityInput.value = 1;
@@ -156,6 +160,14 @@ function calculateOrder(areaDiv) {
     document.getElementById("area-image-summary").src = image; 
 }
 
+function updateCheckoutMinDate() {
+    let checkInDate = new Date(checkInInput.value);
+    let checkOutDate = new Date(checkInDate);
+    checkOutDate.setDate(checkOutDate.getDate() + 1); // Set checkout min to one day after check-in
+    checkOutInput.setAttribute('min', checkOutDate.toISOString().split('T')[0]);
+    checkOutInput.value = checkOutDate.toISOString().split('T')[0]; // Optionally set the checkout date to the new min
+}
+
 function restrictDates() {
     const today = new Date();
     const tomorrow = new Date();
@@ -165,8 +177,6 @@ function restrictDates() {
     checkInInput.value = today.toISOString().split('T')[0];
     checkOutInput.value = tomorrow.toISOString().split('T')[0];
 }
-
-
 
 function loadMapPoints() {
     let map = document.getElementById("interactive-areas");
