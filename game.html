@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Swim & Catch Game</title>
+  <main class="container">
+        <div class="row">
+              <section class="mt-5 text-center container bg-light p-0">
+                  <img src="./assets/SafeSwimmerBanner.png" alt="Banner" class="img-fluid banner"/>
+              </section>
+        </div>
+  </main>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -13,303 +20,112 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      flex-direction: column;
     }
 
     .main-wrapper {
       display: flex;
       align-items: center;
-      gap: 40px;
+      gap: 20px; /* Reduced gap for better fit */
+      display: none;
     }
 
     .game-container {
       border: 5px solid rgb(25, 21, 80);
-      background-color: rgb(164, 224, 215);
-      padding: 10px;
+      padding: 5px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      background-image: url('./assets/pool_background.png');
+      background-position: center;
+      width: 1000px; /* Set a specific width */
+      height: 400px; /* Set a specific height */
     }
 
     .cannon-container {
-      width: 300px;
-      height: 300px;
-      border: 3px dashed rgb(80, 60, 60);
+      width: 200px; /* Adjusted width */
+      height: 400px; /* Adjusted height */
       background-color: #d1f0ee;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: 8px;
+      position: relative;
     }
 
-    h1 {
-      position: absolute;
-      top: 20px;
-      text-align: center;
-      width: 100%;
-      color: #00796b;
+    #cannonImage {
+      width: 144px;
+      height: 144px;
     }
+
+    .image-container {
+      width: 50%; /* Adjust as needed */
+      overflow: hidden; /* Hide overflow if necessary */
+    }
+
+    .instructions {
+      width: 60%; /* Make the image fill the container */
+      height: auto; /* Maintain aspect ratio */
+      align-items: center;
+    }
+
+    .start-screen {
+      text-align: center;
+    }
+
+    .instructions {
+      align-items: center;
+      width: 50%;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #418aa3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* New styles for the banner */
+    .banner {
+      width: 100%; /* Full width of the viewport */
+      height: auto; /* Maintain aspect ratio */
+      max-width: 1000px; /* Limit max width to banner size */
+    }
+
   </style>
 </head>
 <body>
-  <h1>Swim & Catch</h1>
+  <div class="start-screen">
+    <img src="./assets/instructions.png" alt="Game Instructions" class="instructions" />
+    <br><button id="startBtn" class="btn"> Click to Start Game</button>
+    <br><br><button id="durationBtn" class="btn">Set Duration To 2 Minutes</button>
+    <br><br><a href="./index.html">
+      <button id="homeBtn" class="btn">Return Home</button>
+    </a>
+  </div>
+
+  <h1 style="display:none;"></h1>
 
   <div class="main-wrapper">
     <div class="game-container">
-      <canvas id="gameCanvas" width="900" height="600"></canvas>
-    </div>
-
-    <div class="cannon-container">
-      <!--<img id="cannonImg" src="./assets/cannon_spritesheet.png" alt="Cannon" style="width: 48px; height: 48px;">-->
+      <h1 id="score" style="color: white; -webkit-text-stroke: 2px black; position: absolute;">VINCE</h1>
+      <h1 id="timer" style="color: white; -webkit-text-stroke: 2px black; position: absolute; top: 50px;">VINCE</h1>
+      <div id="winScreen" style="position: absolute; left: 350px; top: 100px; display: none;">
+        <h1 style="color: white; -webkit-text-stroke: 2px black; margin-left: 60px;">Well Done!</h1>
+        <button id="playAgainBtn" class="btn">Play Again?</button>
+        <button id="homeBtn2" class="btn">Return Home</button>
+        <br><br><button id="durationBtn2" class="btn" style="margin-left: 15px;">Set Duration To 2 Minutes</button>
+      </div>
+      
+      <canvas id="gameCanvas" width="1000" height="400"></canvas>
     </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const SPRITE_WIDTH = 48;
-    const SPRITE_HEIGHT = 48;
-    const SCALE = 2;
-    const DRAW_WIDTH = SPRITE_WIDTH * SCALE;
-    const DRAW_HEIGHT = SPRITE_HEIGHT * SCALE;
-
-    const sheet = new Image();
-    sheet.src = "./assets/spritesheet_zoro.png";
-
-    const cannonSheet = new Image();
-    cannonSheet.src = "./assets/cannon_spritesheet.png";
-
-    let frame = 0;
-    const frameCount = 6;
-    let row = 4;
-    let lastFrameTime = 0;
-    const frameDelay = 130;
-
-    const player = {
-      x: 300,
-      y: 300,
-      speed: 1.5,
-      dx: 0,
-      dy: 0,
-      catching: false,
-      facingLeft: false
-    };
-
-    const keys = {};
-
-    // Cannon animation vars and scaling
-    let cannonFrame = 0;
-    const cannonFrameCount = 6;
-    const cannonFrameDelay = 100;
-    let lastCannonFrameTime = 0;
-    let cannonAnimating = false;
-    let isCannonFiring = false;
-
-    // Cannon drawing constants for bigger size
-    const CANNON_WIDTH = 48;
-    const CANNON_HEIGHT = 48;
-    const CANNON_SCALE = 3; // Bigger scale!
-    const CANNON_DRAW_WIDTH = CANNON_WIDTH * CANNON_SCALE;
-    const CANNON_DRAW_HEIGHT = CANNON_HEIGHT * CANNON_SCALE;
-    const CANNON_X = canvas.width - CANNON_DRAW_WIDTH - 10; // 10 px padding from right
-    const CANNON_Y = canvas.height / 2 - CANNON_DRAW_HEIGHT / 2;
-
-    let ballX = null;
-    let ballY = null;
-    let ballRadius = 15;
-
-    document.addEventListener("keydown", (e) => {
-      keys[e.key.toLowerCase()] = true;
-      if (e.key === " ") player.catching = true;
-
-      if (e.key === "Enter" && !cannonAnimating) {
-        cannonAnimating = true;
-        cannonFrame = 0;
-        lastCannonFrameTime = 0;
-      }
-    });
-
-    document.addEventListener("keyup", (e) => {
-      keys[e.key.toLowerCase()] = false;
-      if (e.key === " ") player.catching = false;
-    });
-
-    function updateDirection() {
-      let dx = 0,
-        dy = 0;
-      if (keys["w"]) dy = -1;
-      if (keys["s"]) dy = 1;
-      if (keys["a"]) dx = -1;
-      if (keys["d"]) dx = 1;
-
-      player.dx = dx;
-      player.dy = dy;
-
-      if (dx < 0) player.facingLeft = true;
-      else if (dx > 0) player.facingLeft = false;
-
-      player.x += dx * player.speed;
-      player.y += dy * player.speed;
-
-      player.x = Math.max(0, Math.min(canvas.width - DRAW_WIDTH, player.x));
-      player.y = Math.max(0, Math.min(canvas.height - DRAW_HEIGHT, player.y));
-
-      if (player.catching) {
-        if (dx === 0 && dy === 0) row = 2;
-        else if (dx !== 0 && dy !== 0) row = 1;
-        else row = 0;
-      } else {
-        if (dx === 0 && dy === 0) row = 4;
-        else if (dx !== 0 && dy !== 0) row = 6;
-        else row = 5;
-      }
-    }
-
-    function drawFrame() {
-      ctx.save();
-      if (player.facingLeft) {
-        ctx.translate(player.x + DRAW_WIDTH, player.y);
-        ctx.scale(-1, 1);
-        ctx.drawImage(
-          sheet,
-          frame * SPRITE_WIDTH,
-          row * SPRITE_HEIGHT,
-          SPRITE_WIDTH,
-          SPRITE_HEIGHT,
-          0,
-          0,
-          DRAW_WIDTH,
-          DRAW_HEIGHT
-        );
-      } else {
-        ctx.translate(player.x, player.y);
-        ctx.drawImage(
-          sheet,
-          frame * SPRITE_WIDTH,
-          row * SPRITE_HEIGHT,
-          SPRITE_WIDTH,
-          SPRITE_HEIGHT,
-          0,
-          0,
-          DRAW_WIDTH,
-          DRAW_HEIGHT
-        );
-      }
-      ctx.restore();
-    }
-
-    function drawBall() {
-      if (ballX !== null && ballY !== null) {
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function updateBall() {
-      if (isCannonFiring && ballX !== null) {
-        ballX -= 4;
-        if (ballX < -ballRadius) {
-          isCannonFiring = false;
-          ballX = null;
-          ballY = null;
-        }
-      }
-    }
-
-    function checkCollision() {
-      if (!player.catching || ballX === null) return;
-
-      const px = player.x + DRAW_WIDTH / 2;
-      const py = player.y + DRAW_HEIGHT / 2;
-
-      const distX = Math.abs(ballX - px);
-      const distY = Math.abs(ballY - py);
-
-      if (distX < DRAW_WIDTH / 2 && distY < DRAW_HEIGHT / 2) {
-        ballX = null;
-        ballY = null;
-        isCannonFiring = false;
-        console.log("Caught!");
-      }
-    }
-
-    function updateCannon(timestamp) {
-      if (!cannonAnimating) return;
-
-      if (timestamp - lastCannonFrameTime > cannonFrameDelay) {
-        lastCannonFrameTime = timestamp;
-
-        cannonFrame++;
-
-        if (cannonFrame >= cannonFrameCount) {
-          cannonAnimating = false;
-          cannonFrame = 0;
-        }
-
-        if (cannonFrame === 1) {
-          // Fire ball at start of cannon animation
-          ballX = CANNON_X;
-          ballY = CANNON_Y + CANNON_DRAW_HEIGHT / 2;
-          isCannonFiring = true;
-        }
-      }
-    }
-
-    function drawCannon() {
-      if (!cannonAnimating) {
-        // Draw idle cannon (frame 0)
-        ctx.drawImage(
-          cannonSheet,
-          0,
-          0,
-          CANNON_WIDTH,
-          CANNON_HEIGHT,
-          CANNON_X,
-          CANNON_Y,
-          CANNON_DRAW_WIDTH,
-          CANNON_DRAW_HEIGHT
-        );
-      } else {
-        // Draw animated cannon frame
-        ctx.drawImage(
-          cannonSheet,
-          cannonFrame * CANNON_WIDTH,
-          0,
-          CANNON_WIDTH,
-          CANNON_HEIGHT,
-          CANNON_X,
-          CANNON_Y,
-          CANNON_DRAW_WIDTH,
-          CANNON_DRAW_HEIGHT
-        );
-      }
-    }
-
-    function gameLoop(timestamp) {
-      updateDirection();
-      updateBall();
-      checkCollision();
-
-      if (timestamp - lastFrameTime > frameDelay) {
-        frame = (frame + 1) % frameCount;
-        lastFrameTime = timestamp;
-      }
-
-      updateCannon(timestamp);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drawFrame();
-      drawCannon();
-      drawBall();
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    sheet.onload = () => {
-      requestAnimationFrame(gameLoop);
-    };
-  </script>
+  <script src="./game.js"></script>
 </body>
 </html>
+
