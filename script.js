@@ -118,6 +118,13 @@ function loadXMLAreas() {
                         <strong>Cost per Day:</strong> $${cost}<br/>
                         <strong>Status:</strong> ${booked ? "Booked" : "Available"}
                     `;
+
+                    if (areaDiv.classList.contains('booked')) {
+                        hoverPreview.style.background = "rgba(220, 53, 69, 0.6)";
+                    } else {
+                        hoverPreview.style.background = "rgb(98, 252, 175, 0.6)";
+                    }
+
                     hoverPreview.style.display = 'block';
                     hoverPreview.style.left = `${x + 30}px`;
                     hoverPreview.style.top = `${y - 100}px`;
@@ -128,6 +135,18 @@ function loadXMLAreas() {
                 });
 
                 areaDiv.addEventListener('click', () => {
+                    if (areaDiv.classList.contains('booked')) {
+                        alert("The Area is already booked.");
+                        return;
+                    }
+
+                    let index = areaDivs.indexOf(areaDiv);
+
+                    if (capacityInput.value < capacities[index] || capacityInput.value > capacities[index]) {
+                        alert("The inputted capacity is valid for the Area.");
+                        return;
+                    }
+
                     form1.style.display = 'none';
                     form2.style.display = 'block';
                     calculateOrder(areaDiv);
